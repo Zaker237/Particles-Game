@@ -8,4 +8,4 @@
 
 
 
-<img src="game.png" />
+<img src="./images/game.png" />
