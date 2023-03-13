@@ -2,21 +2,13 @@ import time
 import random
 import pygame
 pygame.font.init()
+import configs
 
-WIDTH = 1000
-HEIGHT = 800
-PLAYER_WIDTH = 40
-PLAYER_HEIGHT = 60
-PLAYER_VEL = 8
-STAR_WIDTH = 15
-STAR_HEIGHT = 30
-STAR_VEL = 5
-BALL_VEL = 15
 
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN = pygame.display.set_mode((configs.GAME_WIDTH, configs.GAME_HEIGHT))
 pygame.display.set_caption("Particle Game")
 
-BG = pygame.transform.scale(pygame.image.load("bg.jpeg"), (WIDTH, HEIGHT))
+BG = pygame.transform.scale(pygame.image.load(configs.FONT_IMAGE), (configs.GAME_WIDTH, configs.GAME_HEIGHT))
 FONT = pygame.font.SysFont("comicsans", 30)
 
 
@@ -27,7 +19,7 @@ def draw(player, elapsed_time, stars, balls, score):
     WIN.blit(time_text, (10, 10))
 
     score_text = FONT.render(f"Score: {score}", 1, "white")
-    WIN.blit(score_text, (WIDTH - score_text.get_width() - 20, 10))
+    WIN.blit(score_text, (configs.GAME_WIDTH - score_text.get_width() - 20, 10))
 
     for star in stars:
         pygame.draw.rect(WIN, "white", star)
@@ -43,7 +35,12 @@ def draw(player, elapsed_time, stars, balls, score):
 def main():
     run = True
 
-    player = pygame.Rect((WIDTH//2 - PLAYER_WIDTH//2), (HEIGHT - PLAYER_HEIGHT), PLAYER_WIDTH, PLAYER_HEIGHT)
+    player = pygame.Rect(
+        (configs.GAME_WIDTH//2 - configs.PLAYER_WIDTH//2),
+        (configs.GAME_HEIGHT - configs.PLAYER_HEIGHT),
+        configs.PLAYER_WIDTH,
+        configs.PLAYER_HEIGHT
+    )
     clock = pygame.time.Clock()
     start_time = time.time()
     elapsed_time = 0
@@ -63,8 +60,13 @@ def main():
 
         if star_count > star_add_increment:
             for _ in range(random.randint(1, 5)):
-                star_x = random.randint(0, WIDTH - STAR_WIDTH)
-                star = pygame.Rect(star_x, -STAR_HEIGHT, STAR_WIDTH, STAR_HEIGHT)
+                star_x = random.randint(0, configs.GAME_WIDTH - configs.STAR_WIDTH)
+                star = pygame.Rect(
+                    star_x,
+                    -configs.STAR_HEIGHT,
+                    configs.STAR_WIDTH,
+                    configs.STAR_HEIGHT
+                )
                 stars.append(star)
 
             star_add_increment = max(200, star_add_increment - 50)
@@ -82,14 +84,14 @@ def main():
                 balls.append(ball)
                 last_ball_time = time.time()
     
-        if keys[pygame.K_a] and player.x - PLAYER_VEL >=0:
-            player.x -= PLAYER_VEL
-        if keys[pygame.K_d] and player.x + PLAYER_VEL + player.width <= WIDTH:
-            player.x += PLAYER_VEL
+        if keys[pygame.K_a] and player.x - configs.PLAYER_VEL >=0:
+            player.x -= configs.PLAYER_VEL
+        if keys[pygame.K_d] and player.x + configs.PLAYER_VEL + player.width <= configs.GAME_WIDTH:
+            player.x += configs.PLAYER_VEL
 
         for star in stars[:]:
-            star.y += STAR_VEL
-            if star.y > HEIGHT:
+            star.y += configs.STAR_VEL
+            if star.y > configs.GAME_HEIGHT:
                 stars.remove(star)
                 # score += 1
             elif star.y + star.height >= player.y and star.colliderect(player):
@@ -104,14 +106,18 @@ def main():
                     score += 1
 
         for ball in balls[:]:
-            ball.y -= BALL_VEL
+            ball.y -= configs.BALL_VEL
             #score += 1
             if ball.y < 0:
                 balls.remove(ball)
 
         if hit:
             lost_text = FONT.render("You Lost!", 1, "white")
-            WIN.blit(lost_text, (WIDTH//2-lost_text.get_width()//2, HEIGHT//2 - lost_text.get_height()//2))
+            WIN.blit(
+                lost_text,
+                (configs.GAME_WIDTH//2-lost_text.get_width()//2,
+                configs.GAME_HEIGHT//2 - lost_text.get_height()//2)
+            )
             pygame.display.update()
             pygame.time.delay(4000)
             break
