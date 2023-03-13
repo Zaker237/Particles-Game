@@ -1,6 +1,7 @@
 import time
 import random
 import pygame
+from enemie import Enemie
 pygame.font.init()
 import configs
 
@@ -25,9 +26,9 @@ def draw(player, elapsed_time, stars, balls, score):
         pygame.draw.rect(WIN, "white", star)
 
     for ball in balls:
-        pygame.draw.rect(WIN, "red", ball)
+        pygame.draw.rect(WIN, "green", ball)
 
-    pygame.draw.rect(WIN, "red", player)
+    pygame.draw.rect(WIN, "green", player)
 
     pygame.display.update()
 
