@@ -34,9 +34,20 @@ class Enemie(pygame.Rect):
         self.height = height
         self.type = type
         self.coins = self.COINS.get(type)
+        self.base_coins = self.COINS.get(type)
 
     def get_color(self) -> str:
-        return self.COLORS.get(self.COINS.get(self.type))
+        return self.COLORS.get(self.coins)
 
     def is_alive(self) -> bool:
         return self.coins > 0
+    
+    def get_points(self):
+        if self.type == "simple":
+            return 1
+        elif self.type == "middle":
+            return 10
+        elif self.type == "hard":
+            return 20
+        else:
+            return 0
