@@ -4,16 +4,17 @@ import configs
 
 class Enemie(pygame.Rect):
     COLORS = {
-        1: pygame.Color(255, 0, 0),
-        2: pygame.Color(255, 26, 26),
-        3: pygame.Color(255, 51, 51),
-        4: pygame.Color(255, 77, 77),
-        5: pygame.Color(255, 102, 102),
-        6: pygame.Color(255, 128, 128),
-        7: pygame.Color(255, 153, 153),
-        8: pygame.Color(255, 179, 179),
-        9: pygame.Color(255, 204, 204),
-        10: pygame.Color(255, 255, 255)
+        10: pygame.Color(255, 0, 0),
+        9: pygame.Color(255, 26, 26),
+        8: pygame.Color(255, 51, 51),
+        7: pygame.Color(255, 77, 77),
+        6: pygame.Color(255, 102, 102),
+        5: pygame.Color(255, 128, 128),
+        4: pygame.Color(255, 153, 153),
+        3: pygame.Color(255, 179, 179),
+        2: pygame.Color(255, 204, 204),
+        1: pygame.Color(255, 255, 255),
+        0: pygame.Color(255, 255, 255),
     }
 
     COINS = {
