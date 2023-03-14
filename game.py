@@ -3,6 +3,7 @@ import random
 import pygame
 from enemie import Enemie
 pygame.font.init()
+pygame.mixer.init()
 import configs
 
 
@@ -11,6 +12,11 @@ pygame.display.set_caption("Particle Game")
 
 BG = pygame.transform.scale(pygame.image.load(configs.FONT_IMAGE), (configs.GAME_WIDTH, configs.GAME_HEIGHT))
 FONT = pygame.font.SysFont("comicsans", 30)
+
+GUN_SOUND = pygame.mixer.Sound(configs.GUN_SONG_PATH)
+GRENADE_SOUND = pygame.mixer.Sound(configs.GRENADE_SONG_PATH)
+
+GRENADE_SOUND.play()
 
 
 def draw(player, elapsed_time, stars, balls, score):
@@ -23,7 +29,7 @@ def draw(player, elapsed_time, stars, balls, score):
     WIN.blit(score_text, (configs.GAME_WIDTH - score_text.get_width() - 20, 10))
 
     for star in stars:
-        pygame.draw.rect(WIN, "white", star)
+        pygame.draw.rect(WIN, star.get_color(), star)
 
     for ball in balls:
         pygame.draw.rect(WIN, "green", ball)
@@ -62,11 +68,12 @@ def main():
         if star_count > star_add_increment:
             for _ in range(random.randint(1, 5)):
                 star_x = random.randint(0, configs.GAME_WIDTH - configs.STAR_WIDTH)
-                star = pygame.Rect(
+                star = Enemie(
                     star_x,
                     -configs.STAR_HEIGHT,
                     configs.STAR_WIDTH,
-                    configs.STAR_HEIGHT
+                    configs.STAR_HEIGHT,
+                    type="middle"
                 )
                 stars.append(star)
 
@@ -84,6 +91,7 @@ def main():
                 ball = pygame.Rect(player.x + player.width//2 - 5, player.y, 10, 10)
                 balls.append(ball)
                 last_ball_time = time.time()
+                GUN_SOUND.play()
     
         if keys[pygame.K_a] and player.x - configs.PLAYER_VEL >=0:
             player.x -= configs.PLAYER_VEL
@@ -98,13 +106,19 @@ def main():
             elif star.y + star.height >= player.y and star.colliderect(player):
                 stars.remove(star)
                 hit = True
+                GRENADE_SOUND.play(2)
                 # score += 1
                 break
             for ball in balls[:]:
                 if star.colliderect(ball) and star in stars:
                     balls.remove(ball)
-                    stars.remove(star)
-                    score += 1
+                    star.coins -= 1
+                    #stars.remove(star)
+                    #score += 1
+
+            if not star.is_alive():
+                score += star.get_points()
+                stars.remove(star)
 
         for ball in balls[:]:
             ball.y -= configs.BALL_VEL
