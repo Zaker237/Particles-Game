@@ -19,7 +19,7 @@ GRENADE_SOUND = pygame.mixer.Sound(configs.GRENADE_SONG_PATH)
 GRENADE_SOUND.play()
 
 
-def draw(player, elapsed_time, stars, balls, score):
+def draw(player, elapsed_time, enemies, balls, score):
     WIN.blit(BG, (0, 0))
 
     time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
@@ -28,8 +28,8 @@ def draw(player, elapsed_time, stars, balls, score):
     score_text = FONT.render(f"Score: {score}", 1, "white")
     WIN.blit(score_text, (configs.GAME_WIDTH - score_text.get_width() - 20, 10))
 
-    for star in stars:
-        pygame.draw.rect(WIN, star.get_color(), star)
+    for enemie in enemies:
+        pygame.draw.rect(WIN, enemie.get_color(), enemie)
 
     for ball in balls:
         pygame.draw.rect(WIN, "green", ball)
@@ -52,33 +52,33 @@ def main():
     start_time = time.time()
     elapsed_time = 0
 
-    star_add_increment = 2000
-    star_count = 0
+    enemie_add_increment = 2000
+    enemie_count = 0
     score = 0
 
-    stars = []
+    enemies = []
     balls = []
     hit = False
     last_ball_time = time.time()
 
     while run:
-        star_count += clock.tick(60)
+        enemie_count += clock.tick(60)
         elapsed_time = time.time() - start_time
 
-        if star_count > star_add_increment:
+        if enemie_count > enemie_add_increment:
             for _ in range(random.randint(1, 5)):
-                star_x = random.randint(0, configs.GAME_WIDTH - configs.STAR_WIDTH)
-                star = Enemie(
-                    star_x,
-                    -configs.STAR_HEIGHT,
-                    configs.STAR_WIDTH,
-                    configs.STAR_HEIGHT,
+                enemie_x = random.randint(0, configs.GAME_WIDTH - configs.ENEMIE_WIDTH)
+                enemie = Enemie(
+                    enemie_x,
+                    -configs.ENEMIE_HEIGHT,
+                    configs.ENEMIE_WIDTH,
+                    configs.ENEMIE_HEIGHT,
                     type="middle"
                 )
-                stars.append(star)
+                enemies.append(enemie)
 
-            star_add_increment = max(200, star_add_increment - 50)
-            star_count = 0
+            enemie_add_increment = max(200, enemie_add_increment - 50)
+            enemie_count = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -98,27 +98,27 @@ def main():
         if keys[pygame.K_d] and player.x + configs.PLAYER_VEL + player.width <= configs.GAME_WIDTH:
             player.x += configs.PLAYER_VEL
 
-        for star in stars[:]:
-            star.y += configs.STAR_VEL
-            if star.y > configs.GAME_HEIGHT:
-                stars.remove(star)
+        for enemie in enemies[:]:
+            enemie.y += configs.ENEMIE_VEL
+            if enemie.y > configs.GAME_HEIGHT:
+                enemies.remove(enemie)
                 # score += 1
-            elif star.y + star.height >= player.y and star.colliderect(player):
-                stars.remove(star)
+            elif enemie.y + enemie.height >= player.y and enemie.colliderect(player):
+                enemies.remove(enemie)
                 hit = True
                 GRENADE_SOUND.play(2)
                 # score += 1
                 break
             for ball in balls[:]:
-                if star.colliderect(ball) and star in stars:
+                if enemie.colliderect(ball) and enemie in enemies:
                     balls.remove(ball)
-                    star.coins -= 1
-                    #stars.remove(star)
+                    enemie.coins -= 1
+                    #enemies.remove(enemie)
                     #score += 1
 
-            if not star.is_alive():
-                score += star.get_points()
-                stars.remove(star)
+            if not enemie.is_alive():
+                score += enemie.get_points()
+                enemies.remove(enemie)
 
         for ball in balls[:]:
             ball.y -= configs.BALL_VEL
@@ -137,7 +137,7 @@ def main():
             pygame.time.delay(4000)
             break
 
-        draw(player, elapsed_time, stars, balls, score)
+        draw(player, elapsed_time, enemies, balls, score)
 
     pygame.quit()
 
