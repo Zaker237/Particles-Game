@@ -1,5 +1,11 @@
 import pygame
+from enum import Enum
 import configs
+
+class EnemieType(Enum):
+    SIMPLE = 1
+    MIDDLE = 2
+    HARD = 3
 
 
 class Enemie(pygame.Rect):
