@@ -29,19 +29,15 @@ class Enemie(pygame.Rect):
         "hard": 10
     }
 
-    def __init__(self, x: int, y: int, width: int, height: int, type: str="simple") ->None:
+    def __init__(self, x: int, y: int, width: int, height: int, type: EnemieType) ->None:
         super().__init__(x, y, width, height)
-
-        if type not in list(self.COINS.keys()):
-            raise ValueError(f"The type should be in [{','.join(list(self.COINS.keys()))}]!")
-
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.type = type
-        self.coins = self.COINS.get(type)
-        self.base_coins = self.COINS.get(type)
+        self.coins = type.value
+        self.base_coins = type.value
 
     def get_color(self) -> str:
         return self.COLORS.get(self.coins)
@@ -50,11 +46,11 @@ class Enemie(pygame.Rect):
         return self.coins > 0
     
     def get_points(self):
-        if self.type == "simple":
+        if self.type == EnemieType.SIMPLE:
             return 1
-        elif self.type == "middle":
+        elif self.type == EnemieType.MIDDLE:
             return 10
-        elif self.type == "hard":
+        elif self.type == EnemieType.HARD:
             return 20
         else:
             return 0

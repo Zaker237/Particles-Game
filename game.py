@@ -1,7 +1,7 @@
 import time
 import random
 import pygame
-from enemie import Enemie
+from enemie import Enemie, EnemieType
 pygame.font.init()
 pygame.mixer.init()
 import configs
@@ -73,12 +73,34 @@ def main():
                     -configs.ENEMIE_HEIGHT,
                     configs.ENEMIE_WIDTH,
                     configs.ENEMIE_HEIGHT,
-                    type="middle"
+                    type=EnemieType.SIMPLE
                 )
                 enemies.append(enemie)
 
             enemie_add_increment = max(200, enemie_add_increment - 50)
             enemie_count = 0
+
+        if random.randint(1, 100) == 17:
+            enemie_x = random.randint(0, configs.GAME_WIDTH - configs.ENEMIE_WIDTH)
+            enemie = Enemie(
+                enemie_x,
+                -configs.ENEMIE_HEIGHT,
+                configs.ENEMIE_WIDTH + 5,
+                configs.ENEMIE_HEIGHT + 5,
+                type=EnemieType.MIDDLE
+            )
+            enemies.append(enemie)
+        
+        if random.randint(1, 500) == 59:
+            enemie_x = random.randint(0, configs.GAME_WIDTH - configs.ENEMIE_WIDTH)
+            enemie = Enemie(
+                enemie_x,
+                -configs.ENEMIE_HEIGHT,
+                configs.ENEMIE_WIDTH + 10,
+                configs.ENEMIE_HEIGHT + 10,
+                type=EnemieType.HARD
+            )
+            enemies.append(enemie)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
