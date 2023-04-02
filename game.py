@@ -115,9 +115,9 @@ def main():
                 last_ball_time = time.time()
                 GUN_SOUND.play()
     
-        if keys[pygame.K_a] and player.x - configs.PLAYER_VEL >=0:
+        if keys[pygame.K_LEFT] and player.x - configs.PLAYER_VEL >=0:
             player.x -= configs.PLAYER_VEL
-        if keys[pygame.K_d] and player.x + configs.PLAYER_VEL + player.width <= configs.GAME_WIDTH:
+        if keys[pygame.K_RIGHT] and player.x + configs.PLAYER_VEL + player.width <= configs.GAME_WIDTH:
             player.x += configs.PLAYER_VEL
 
         for enemie in enemies[:]:
