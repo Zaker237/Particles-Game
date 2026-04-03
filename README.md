@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] extract Particle as class and make some of them more rebust so that they collide many balls before they die
+- [x] extract Particle as class and make some of them more rebust so that they collide many balls before they die
 
 - [ ] thing about some bonus
 
