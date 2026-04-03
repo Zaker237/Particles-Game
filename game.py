@@ -2,6 +2,8 @@ import time
 import random
 import pygame
 from enemie import Enemie, EnemieType
+from particle import Particle
+from powerup import PowerUp
 pygame.font.init()
 pygame.mixer.init()
 import configs
@@ -19,7 +21,7 @@ GRENADE_SOUND = pygame.mixer.Sound(configs.GRENADE_SONG_PATH)
 GRENADE_SOUND.play()
 
 
-def draw(player, elapsed_time, enemies, balls, score):
+def draw(player, elapsed_time, enemies, balls, score, particles: list[Particle], powerups: list[PowerUp]):
     WIN.blit(BG, (0, 0))
 
     time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
@@ -33,6 +35,12 @@ def draw(player, elapsed_time, enemies, balls, score):
 
     for ball in balls:
         pygame.draw.rect(WIN, "green", ball)
+
+    for p in particles:
+        p.draw(WIN)
+
+    for p_up in powerups:
+        p_up.draw(WIN)
 
     pygame.draw.rect(WIN, "green", player)
 
@@ -58,8 +66,13 @@ def main():
 
     enemies = []
     balls = []
+    particles = []
     hit = False
     last_ball_time = time.time()
+
+    powerups = []
+    current_bonus = None
+    bonus_start_time = 0
 
     while run:
         enemie_count += clock.tick(60)
@@ -106,10 +119,15 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 break
-        
+        # Check if bonus expired (e.g., lasts 5 seconds)
+        if current_bonus and time.time() - bonus_start_time > 5:
+            current_bonus = None
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
-            if time.time() - last_ball_time > 0.05:
+            cooldown = 0.01 if current_bonus == "RAPID" else 0.15
+
+            if time.time() - last_ball_time > cooldown:
                 ball = pygame.Rect(player.x + player.width//2 - 5, player.y, 10, 10)
                 balls.append(ball)
                 last_ball_time = time.time()
@@ -139,7 +157,11 @@ def main():
                     #score += 1
 
             if not enemie.is_alive():
+                if enemie.type == EnemieType.HARD and random.random() < 0.2:
+                    powerups.append(PowerUp(enemie.x, enemie.y, "RAPID"))
                 score += enemie.get_points()
+                for _ in range(15):  # Create 15 particles per death
+                    particles.append(Particle(enemie.centerx, enemie.centery, enemie.get_color()))
                 enemies.remove(enemie)
 
         for ball in balls[:]:
@@ -147,6 +169,20 @@ def main():
             #score += 1
             if ball.y < 0:
                 balls.remove(ball)
+
+        for particle in particles[:]:
+            particle.update()
+            if particle.is_dead():
+                particles.remove(particle)
+
+        for p_up in powerups[:]:
+            p_up.update()
+            if p_up.colliderect(player):
+                current_bonus = p_up.kind
+                bonus_start_time = time.time()
+                powerups.remove(p_up)
+            elif p_up.y > configs.GAME_HEIGHT:
+                powerups.remove(p_up)
 
         if hit:
             lost_text = FONT.render("You Lost!", 1, "white")
@@ -159,7 +195,12 @@ def main():
             pygame.time.delay(4000)
             break
 
-        draw(player, elapsed_time, enemies, balls, score)
+        if current_bonus:
+            rem = max(0, 5 - (time.time() - bonus_start_time))
+            bonus_text = FONT.render(f"{current_bonus}: {rem:.1f}s", 1, "yellow")
+            WIN.blit(bonus_text, (configs.GAME_WIDTH // 2 - bonus_text.get_width() // 2, 50))
+
+        draw(player, elapsed_time, enemies, balls, score, particles, powerups)
 
     pygame.quit()
 
